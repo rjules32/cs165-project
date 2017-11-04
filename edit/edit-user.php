@@ -8,6 +8,7 @@ session_start();
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="utf-8">
     <link   href="css/bootstrap.min.css" rel="stylesheet">
     <script src="js/bootstrap.min.js"></script>
@@ -15,6 +16,30 @@ session_start();
  
 <body>
    <?php
+		function generateForm($id, $curr_username, $curr_password, $curr_isadmin){
+			$curr_isadmin = ($curr_isadmin)? 'checked': null;
+			return "<h3>Edit a User</h3>
+		<form action = 'edit-user.php?id=$id' method='post'>
+		<table>
+        	<tr> 
+	  			<td>Username</td>
+                <td><input name='new_username' type='text'  value='".$curr_username."' required></td>
+			</tr>
+			<tr>                   
+   				<td>Password</td>
+            	<td><input name='new_password' type='password' value='".$curr_password."' required></td>
+            </tr>
+			<tr>    
+                <td>Is Admin?</td>
+                <td><input name='new_isadmin' type='checkbox' value='1' $curr_isadmin></td>
+            </tr>
+			<tr>
+				<td><input  type='submit' name='edit_user' value='Save'/></td>
+                <td><a class='btn' href='../user.php'>Back</a></td>
+			</tr>
+		</table> </form>";
+		}
+   
 		$id = null;
 		if ( !empty($_GET['id'])) {
 			$id = $_REQUEST['id'];
@@ -27,35 +52,35 @@ session_start();
 			$sql = "SELECT * from users WHERE id = '{$id}'";
 			$result = $conn->query($sql);
 			$row = mysqli_fetch_array($result);
-			$username = $row['username'];
-			$password = $row['password'];
-			$isadmin = $row['is_admin'];
+			$curr_username = $row['username'];
+			$curr_password = $row['password'];
+			$curr_isadmin = ($row['is_admin'])? 'checked' : null;
+		
+			mysqli_close($conn);
 		}
    
-   
-		$form="<h3>Edit a User</h3>
-		<table>
-        	<tr> 
-	  			<td>Username</td>
-                <td><input name='username' type='text'  placeholder='".$username." required></td>
-			</tr>
-			<tr>                   
-   				<td>Password</td>
-            	<td><input name='password' type='password' placeholder='".$password."' required></td>
-            </tr>
-			<tr>    
-                <td>Is Admin?</td>
-                <td><input name='isadmin' type='checkbox'  placeholder='".$isadmin."' value='1'></td>
-            </tr>
-			<tr>
-				<td><input  type='submit' name='create_user' value='Create'/></td>
-                <td><a class='btn' href='../user.php'>Back</a></td>
-			</tr>
-		</table>
+		if($_POST['edit_user']){
+			$new_username = $_POST['new_username'];
+			$new_password = $_POST['new_password'];	
+			$new_isadmin = ($_POST['new_isadmin'])? 1 : 0;
 		
-		echo "$form";
+			include('../connect.php');
 		
-		mysqli_close($conn);
+			if(!mysqli_query($conn, "UPDATE users SET username = '{$new_username}' 
+					, password = '{$new_password}'
+					, is_admin = '{$new_isadmin}' 
+					WHERE id = '{$id}'")){
+				echo "Error description: " . mysqli_error($conn) . "<br>". generateForm($id, $new_username, $new_password, $new_isadmin);
+			} else { 
+				echo "Successfully edited a user! <br/>". generateForm($id, $new_username, $new_password, $new_isadmin);
+			}
+		
+			mysqli_close($conn);
+		} else{
+			echo generateForm($id, $curr_username, $curr_password, $curr_isadmin);
+		}
+		
+			
 		
 	?>
   </body>

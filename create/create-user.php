@@ -54,7 +54,7 @@ session_start();
 			$id++;
 			
 			if(!mysqli_query($conn, "INSERT INTO users VALUES ('{$id}','{$username}','{$password}','{$isadmin}')")){
-				echo "Error description: " . mysqli_error($con) . "<br> $form";
+				echo "Error description: " . mysqli_error($conn) . "<br> $form";
 			} else {
 				echo "Successfully created a user! <br> $form";
 			}	

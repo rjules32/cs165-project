@@ -51,7 +51,9 @@ session_start();
 				$result = $conn->query($sql);
 				while($row = mysqli_fetch_array($result)){
 					echo "<tr>";
-					echo '<td><a href="edit/edit-user.php?id='.$row['id'].'">edit</a> | <a href="view/view-user.php?id='.$row['id'].'">view</a> | <a>delete</a></td>';
+					echo '<td><a href="edit/edit-user.php?id='.$row['id'].'">edit</a>
+					| <a href="view/view-user.php?id='.$row['id'].'">view</a>
+					| <a href="delete/delete-user.php?id='.$row['id'].'">delete</a></td>';
 					foreach($_POST['check_list'] as $rowVal){
 						echo "<td>" . $row[$rowVal] . "</td>";
 					}

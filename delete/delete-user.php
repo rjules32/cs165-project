@@ -30,11 +30,22 @@ session_start();
 			$username = $row['username'];
 			$password = $row['password'];
 			$isadmin = ($row['is_admin'] == '1')? 'Yes': 'No';
+			
+			mysqli_close($conn);
 		}
    
    
-		$form="<h3>View a User</h3>
-			<table border='1'>
+		$form="<h3>Delete a User</h3>
+			<p class='alert alert-error'>Are you sure you want to delete this user?</p>
+			<form action = 'delete-user.php?id=$id' method='post'>
+			<table>
+        	<tr> 
+	  			<td><input name='delete_user' type='submit' value='Yes'/></td>
+                <td><a class='btn' href='../user.php'>No</a></td>
+			</tr>
+		</table>
+		<br/><br/>
+		<table border='1'>
         	<tr> 
 	  			<td>Username</td>
                 <td>".$username."</td>
@@ -47,12 +58,26 @@ session_start();
                 <td>Is Admin?</td>
                 <td>".$isadmin."</td>
             </tr>
-		</table><br/><a class='btn' href='../user.php'>Back</a>";
+		</table>
+		</form>
 		
-		echo "$form";
+		";
+		
+		if($_POST['delete_user']){		
+			include('../connect.php');
+		
+			if(!mysqli_query($conn, "DELETE FROM users WHERE id='{$id}'")){
+				echo "Error description: " . mysqli_error($conn) . "<br> $form";
+			} else { 
+				echo "Successfully deleted a user! <br/> <a class='btn' href='../user.php'>Back</a> ";
+			}
+		
+			mysqli_close($conn);
+		} else{
+			echo  "$form";
+		}
 		
 		
-		mysqli_close($conn);
 		
 	?>
   </body>
